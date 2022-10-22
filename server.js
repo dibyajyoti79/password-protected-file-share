@@ -13,7 +13,22 @@ app.use(express.json())
 app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, "../public/assests")));
 
-const upload = multer({ dest: 'uploads' })
+// setup multer
+let storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'uploads/'),
+    filename: (req, file, cb) => {
+        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    }
+});
+
+let upload = multer({
+    storage,
+    limit: { fileSize: 1000000 * 100 }
+});
+
+
+// const upload = multer({ dest: 'uploads' })
 
 mongoose.connect(process.env.DATABASE_URL)
 
